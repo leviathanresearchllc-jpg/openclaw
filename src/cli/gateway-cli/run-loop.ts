@@ -197,7 +197,9 @@ export async function runGatewayLoop(params: {
       reason,
       error,
     );
-    if ("message" in result) gatewayLog.warn(result.message);
+    if ("message" in result) {
+      gatewayLog.warn(result.message);
+    }
   };
   const forceExit = (reason: string) => {
     try {
@@ -212,7 +214,9 @@ export async function runGatewayLoop(params: {
     }
   };
   const releaseLockIfHeld = async (): Promise<boolean> => {
-    if (!lock) return false;
+    if (!lock) {
+      return false;
+    }
     await lock.release();
     lock = null;
     return true;
@@ -233,7 +237,9 @@ export async function runGatewayLoop(params: {
     restartResolver?.();
   };
   const reacquireAndResumeInProcessRestart = async () => {
-    if (await reacquireLockForInProcessRestart()) resumeInProcessRestart();
+    if (await reacquireLockForInProcessRestart()) {
+      resumeInProcessRestart();
+    }
   };
   const confirmLaunchdHandoff = async (respawn: {
     handoffSpawned?: Promise<boolean>;
@@ -378,7 +384,7 @@ export async function runGatewayLoop(params: {
       }
       gatewayLog.info(`restart mode: full process restart (${modeLabel})`);
       if (respawnSupervisorMode === "launchd" && !(await confirmLaunchdHandoff(respawn))) {
-        await writeStabilityBundle("gateway.restart_handoff_spawn_failed");
+        writeStabilityBundle("gateway.restart_handoff_spawn_failed");
         gatewayLog.warn(
           "launchd restart handoff failed to spawn; falling back to in-process restart",
         );
@@ -393,7 +399,7 @@ export async function runGatewayLoop(params: {
       return;
     }
     if (respawn.mode === "failed") {
-      await writeStabilityBundle("gateway.restart_respawn_failed");
+      writeStabilityBundle("gateway.restart_respawn_failed");
       gatewayLog.warn(
         `full process restart failed (${respawn.detail ?? "unknown error"}); falling back to in-process restart`,
       );
@@ -1083,7 +1089,7 @@ export async function runGatewayLoop(params: {
         }
         const errMsg = formatErrorMessage(err);
         const errStack = err instanceof Error && err.stack ? `\n${err.stack}` : "";
-        await writeStabilityBundle("gateway.restart_startup_failed", err);
+        writeStabilityBundle("gateway.restart_startup_failed", err);
         gatewayLog.error(
           `gateway startup failed: ${errMsg}. ` +
             `Process will stay alive; fix the issue and restart.${errStack}`,
